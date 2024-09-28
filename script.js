@@ -1,9 +1,9 @@
 const board = document.getElementById("game-board");
 const tiles = Array.from(document.querySelectorAll(".tile"));
 let emptyTile = document.getElementById("empty-tile");
-let moveCount = 40; // Iniciar com o número máximo de movimentos permitidos
+let moveCount = 50; // Iniciar com o número máximo de movimentos permitidos
 const resetBtn = document.getElementById("reset-btn");
-const gameOverMessage = document.getElementById("game-over-message"); // Elemento para a mensagem "PERDEU MANINHO!"
+const gameOverMessage = document.getElementById("game-over-message"); // Elemento para a mensagem de fim de jogo
 
 document.getElementById("move-count").textContent = moveCount;
 
@@ -46,11 +46,13 @@ function shuffleBoard() {
 
 // Função para verificar se o jogador venceu
 function checkWin() {
-  const currentOrder = tiles.map(tile => tile.textContent).join("");
-  const winningOrder = "12345678";
-  
-  // Verifica se a ordem das peças está correta (ignorando o espaço vazio)
-  if (currentOrder.startsWith(winningOrder)) {
+  const currentOrder = tiles.map(tile => tile.textContent.trim()); // Obter o conteúdo de cada peça
+  const winningOrder = ["1", "2", "3", "4", "5", "6", "7", "8", ""]; // Ordem vencedora
+
+  // Verifica se todas as peças estão na ordem correta, inclusive o espaço vazio no final
+  const isCorrectOrder = currentOrder.every((content, index) => content === winningOrder[index]);
+
+  if (isCorrectOrder) {
     // Disparar confete ao vencer
     setTimeout(() => {
       confetti({
@@ -58,7 +60,10 @@ function checkWin() {
         spread: 70,
         origin: { y: 0.6 }
       });
-      alert("Você venceu!");
+
+      // Exibir a mensagem "Você venceu!"
+      gameOverMessage.textContent = "Você venceu!";
+      gameOverMessage.style.display = 'block';
     }, 100);
     disableGame(); // Desativa o jogo ao vencer
   }
@@ -71,7 +76,8 @@ function decrementMoveCount() {
 
   // Verifica se o jogador atingiu o limite de movimentos (0 movimentos)
   if (moveCount <= 0) {
-    gameOverMessage.style.display = 'block'; // Mostra a mensagem "PERDEU MANINHO!"
+    gameOverMessage.textContent = "PERDEU MANINHO!";
+    gameOverMessage.style.display = 'block'; // Mostra a mensagem de derrota
     disableGame();
   }
 }
@@ -94,7 +100,7 @@ function handleTileClick() {
 
 // Função para reativar o jogo
 function enableGame() {
-  gameOverMessage.style.display = 'none'; // Esconde a mensagem "PERDEU MANINHO!" ao reiniciar o jogo
+  gameOverMessage.style.display = 'none'; // Esconde a mensagem de fim de jogo ao reiniciar
   tiles.forEach(tile => {
     tile.addEventListener("click", handleTileClick);
   });
@@ -102,7 +108,7 @@ function enableGame() {
 
 // Função para reiniciar o jogo
 function resetGame() {
-  moveCount = 40; // Reiniciar com o número máximo de movimentos
+  moveCount = 50; // Reiniciar com o número máximo de movimentos
   document.getElementById("move-count").textContent = moveCount;
   shuffleBoard(); // Embaralhar o tabuleiro novamente
   enableGame(); // Reativar o jogo
@@ -118,3 +124,4 @@ tiles.forEach(tile => {
 
 // Embaralha o tabuleiro no início do jogo
 shuffleBoard();
+
